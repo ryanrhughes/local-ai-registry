@@ -1,0 +1,69 @@
+{
+ "recipe": {
+  "model": "lfm2.5-24b-a2b",
+  "weights": "LiquidAI/LFM2.5-24B-A2B-GGUF@0912d33141f77e10705345a6732bfd83f0252fdc",
+  "engine": "llama.cpp-lfm2.5-24b-a2b-q8-0-128k-rtx-spark-n1x-128gb@b195b5299103",
+  "set": {},
+  "card": "rtx-spark-n1x-128gb"
+ },
+ "where": {
+  "on": "owner",
+  "gpu": "NVIDIA RTX Spark N1X"
+ },
+ "passed": true,
+ "proof": {
+  "at": "2026-10-18",
+  "on": "owner",
+  "gpu": "NVIDIA RTX Spark N1X",
+  "launch_sha256": "147cd8c1c4a781a24fd7e6f1114f230bc03767a03d8317bce5ae435a08a62123",
+  "gates": "load chat reasoning tools context speed",
+  "tps": 71.5,
+  "prefill": 1149,
+  "served": "lfm2.5-24b-a2b"
+ },
+ "evidence": {
+  "ok": {
+   "load": true,
+   "chat": true,
+   "reasoning": true,
+   "tools": true,
+   "context": true,
+   "speed": true
+  },
+  "chat": {
+   "content": "\n\nRed, yellow, blue (the traditional RYB primaries for pigments; in additive light mixing they are red, green, blue).",
+   "finish": "stop"
+  },
+  "reasoning": {
+   "thinking_chars": 153,
+   "content": "\n\n391"
+  },
+  "tools": {
+   "call": [
+    {
+     "type": "function",
+     "function": {
+      "name": "get_weather",
+      "arguments": "{\"city\":\"Paris\"}"
+     },
+     "id": "b7xVXixqFbbMfCbFa0VHbpQxqK9l1vH9"
+    }
+   ],
+   "reply": "The current weather in Paris is **17°C** with an **overcast** sky.",
+   "finish": "stop",
+   "calls_again": 0,
+   "thinking_chars": 57
+  },
+  "context": {
+   "prompt_tokens": 91882,
+   "seconds": 80.0,
+   "content": "58213"
+  },
+  "speed": {
+   "window_s": 30,
+   "tokens_total": 10438,
+   "seconds_total": 154.0
+  }
+ },
+ "launch_config_sha256": null
+}

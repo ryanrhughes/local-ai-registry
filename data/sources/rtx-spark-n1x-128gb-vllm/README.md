@@ -39,6 +39,10 @@ Before each run, the rendered args were checked to equal, argument for argument,
 
 The same repository's IQ3_S build passed every gate first (31.0 tok/s, 300 tok/s prefill) with the n-gram table memory-mapped and read on demand (`--load-mode mmap --lazy-mode on`, 55 GB resident). It is not exported: a memory-mapped load reaches the GPU at under 50 MB/s on this machine, as vLLM's mmap loading did above, so it took 19.5 min to start once and over 40 min the next time, against the plugin's 30-minute limit. CPU reads of the same file run at 1.9 GB/s (`pread`) and 1.7 GB/s (touching a mapping), so the slow step is the GPU copy out of mapped pages. Read whole, Q2_0 serves in under a minute.
 
+**Ornith-1.5-35B-A3B and LFM2.5-24B-A2B (2026-10-18)** run whole from their Q8_0 GGUFs on llama.cpp b11718 and leave the desktop 50 GiB or more.
+
+**Not exported, 2026-10-18:** Mellum2.1-12B-A2.5B-Thinking (Q8_0) passed load, chat, reasoning and tools, then on the context gate read the 106K-token prompt in 5 min and thought for 40 min at 3–4 tok/s without answering; the run was stopped. MiniCPM-V 4.7 35B-A3B (Q5_0 with its BF16 DSpark draft at 15 tokens) decoded at 5.0 tok/s and failed the reasoning, context and speed gates.
+
 ## Files
 
 - **`memwatch/<model>.csv`:** one per launch, every 5 s from `docker run` until the container was removed.
@@ -62,5 +66,7 @@ The same repository's IQ3_S build passed every gate first (31.0 tok/s, 300 tok/s
 | `nemotron-3.5-bolt-74b-a9b.llama.cpp.256k` (NVIDIA 24 GB GGUF, LiLiCorr draft, llama.cpp b11718) | 33.7 | 590 | 213575 | 10 s to serve | 35100 | 94.4 → 60.0 |
 | `nemotron-3.5-super-vl.llama.cpp.128k` (ggml-org NVFP4 GGUF, LiLiCorr draft, q8_0 KV) | 15.7 | 477 | 106257 | 57 s to serve | 83588 | 93.7 → 15.3 |
 | `qwen3.8-flash-next.llama.cpp.256k` (ISTA-DASLab GSQ-RCO Q2_0 GGUF, unsloth Q8_0 MTP draft, q8_0 KV) | 37.8 | 366 | 213612 | 59 s to serve | 52898 | 96.9 → 19.2 |
+| `ornith-1.5-35b-a3b.llama.cpp.256k` (Q8_0 GGUF, built-in MTP 3) | 46.9 | 640 | 213570 | 32 s to serve | 48806 | 94.9 → 50.6 |
+| `lfm2.5-24b-a2b.llama.cpp.128k` (Q8_0 GGUF) | 71.5 | 1149 | 91882 | 21 s to serve | 32378 | 94.7 → 66.7 |
 
 Load is vLLM's "Model loading took". The plugin's whole start, from `docker run` to the API answering, took 182–288 s for each.

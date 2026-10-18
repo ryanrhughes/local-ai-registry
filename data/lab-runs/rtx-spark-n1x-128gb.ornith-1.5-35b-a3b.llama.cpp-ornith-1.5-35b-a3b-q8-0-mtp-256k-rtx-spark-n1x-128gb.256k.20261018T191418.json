@@ -1,0 +1,69 @@
+{
+ "recipe": {
+  "model": "ornith-1.5-35b-a3b",
+  "weights": "ornith-ai/Ornith-1.5-35B-A3B-GGUF@12393612fd4f730ff5aadc23e9b8f9648aa49ceb",
+  "engine": "llama.cpp-ornith-1.5-35b-a3b-q8-0-mtp-256k-rtx-spark-n1x-128gb@b195b5299103",
+  "set": {},
+  "card": "rtx-spark-n1x-128gb"
+ },
+ "where": {
+  "on": "owner",
+  "gpu": "NVIDIA RTX Spark N1X"
+ },
+ "passed": true,
+ "proof": {
+  "at": "2026-10-18",
+  "on": "owner",
+  "gpu": "NVIDIA RTX Spark N1X",
+  "launch_sha256": "db86de87ba0cd41d0e9280d2b8ddfe275531ab8897755922506c4823bb2f7a7e",
+  "gates": "load chat reasoning tools context speed",
+  "tps": 46.9,
+  "prefill": 640,
+  "served": "ornith-1.5-35b-a3b"
+ },
+ "evidence": {
+  "ok": {
+   "load": true,
+   "chat": true,
+   "reasoning": true,
+   "tools": true,
+   "context": true,
+   "speed": true
+  },
+  "chat": {
+   "content": "Red, Yellow, Blue",
+   "finish": "stop"
+  },
+  "reasoning": {
+   "thinking_chars": 197,
+   "content": "391"
+  },
+  "tools": {
+   "call": [
+    {
+     "type": "function",
+     "function": {
+      "name": "get_weather",
+      "arguments": "{\"city\":\"Paris\"}"
+     },
+     "id": "UGL53MZyhq5xTiK3lyBaApaTC4DvsbpL"
+    }
+   ],
+   "reply": "The weather in **Paris** right now:\n\n- 🌡️ Temperature: **17°C**\n- ☁️ Conditions: **Overcast**\n\nIt's a mild, cloudy day in Paris. You might want to bring a light jacket just in case!",
+   "finish": "stop",
+   "calls_again": 0,
+   "thinking_chars": 74
+  },
+  "context": {
+   "prompt_tokens": 213570,
+   "seconds": 333.8,
+   "content": "58213"
+  },
+  "speed": {
+   "window_s": 30,
+   "tokens_total": 1173,
+   "seconds_total": 25.2
+  }
+ },
+ "launch_config_sha256": null
+}
