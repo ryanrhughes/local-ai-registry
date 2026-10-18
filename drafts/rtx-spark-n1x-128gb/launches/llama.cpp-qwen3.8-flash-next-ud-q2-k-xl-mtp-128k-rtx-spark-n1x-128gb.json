@@ -1,0 +1,96 @@
+{
+  "id": "llama.cpp-qwen3.8-flash-next-ud-q2-k-xl-mtp-128k-rtx-spark-n1x-128gb",
+  "engine": "llama.cpp",
+  "about": "DRAFT, never run. Qwen3.8-Flash-Next (qwen4exp, 177B MoE) UD-Q2_K_XL with its Q8_0 MTP draft head, all on the RTX Spark N1X's GPU (128 GiB unified with the host). Upstream llama.cpp b11706 (CUDA 13.4, its default arch list includes 121a-real; one index digest over linux/amd64 + linux/arm64). --load-mode none instead of mmap: on this unified-memory machine vLLM's mmap'd loading ran at ~60 MB/s (data/sources/rtx-spark-n1x-128gb-vllm), so the GGUF is read, not mapped. 83.0 GB of weights leave ~14 GiB for 131,072 tokens of q8_0 KV, compute buffers and the ~22 GiB desktop session; text only (no mmproj) to stay inside that.",
+  "image": "ghcr.io/ggml-org/llama.cpp:server-cuda13-b11706@sha256:1ef57822219e38611ef487348a1207873855e73b9ff53c1bfe85627764ce3a0d",
+  "backend": "nvidia",
+  "port": 8080,
+  "entrypoint": "/app/llama-server",
+  "args": [
+    "--model",
+    "/models/UD-Q2_K_XL/Qwen3.8-Flash-Next-UD-Q2_K_XL-00001-of-00003.gguf",
+    "--spec-type",
+    "draft-mtp",
+    "--model-draft",
+    "/models/mtp-Qwen3.8-Flash-Next-Q8_0.gguf",
+    "--spec-draft-n-max",
+    "3",
+    "--cache-type-k",
+    "q8_0",
+    "--cache-type-v",
+    "q8_0",
+    "--load-mode",
+    "none",
+    "--n-gpu-layers",
+    "999",
+    "--host",
+    "0.0.0.0",
+    "--port",
+    "8080",
+    "--ctx-size",
+    "131072",
+    "--flash-attn",
+    "on",
+    "--parallel",
+    "1",
+    "--jinja",
+    "--cache-ram",
+    "0",
+    "--metrics",
+    "--chat-template-kwargs",
+    "{\"enable_thinking\":true}"
+  ],
+  "env": {},
+  "shm": "16g",
+  "weights": [
+    {
+      "repo": "unsloth/Qwen3.8-Flash-Next-GGUF",
+      "revision": "766911a6b7369840a91dbcd95f9f997acaab6cd6",
+      "at": "/models",
+      "layout": "dir",
+      "files": [
+        "UD-Q2_K_XL/Qwen3.8-Flash-Next-UD-Q2_K_XL-00001-of-00003.gguf",
+        "UD-Q2_K_XL/Qwen3.8-Flash-Next-UD-Q2_K_XL-00002-of-00003.gguf",
+        "UD-Q2_K_XL/Qwen3.8-Flash-Next-UD-Q2_K_XL-00003-of-00003.gguf",
+        "mtp-Qwen3.8-Flash-Next-Q8_0.gguf"
+      ]
+    }
+  ],
+  "config": null,
+  "ctx": 131072,
+  "seqs": 1,
+  "vision": false,
+  "cards": 1,
+  "plugin": {
+    "name": "Qwen3.8-Flash-Next",
+    "family": "qwen",
+    "format": "GGUF · UD-Q2_K_XL + MTP (Q8_0)",
+    "engine": "llama.cpp",
+    "servedName": "/models/UD-Q2_K_XL/Qwen3.8-Flash-Next-UD-Q2_K_XL-00001-of-00003.gguf",
+    "sizeGb": 83.007,
+    "minDriver": "535.0",
+    "scratch": null,
+    "capabilities": {
+      "chat": true,
+      "reasoning": true,
+      "tools": true,
+      "vision": false,
+      "video": false
+    },
+    "serving": {
+      "ctxTokens": 131072,
+      "kvTokens": 131072
+    },
+    "weights": [
+      {
+        "dir": "",
+        "files": "UD-Q2_K_XL/Qwen3.8-Flash-Next-UD-Q2_K_XL-00001-of-00003.gguf,UD-Q2_K_XL/Qwen3.8-Flash-Next-UD-Q2_K_XL-00002-of-00003.gguf,UD-Q2_K_XL/Qwen3.8-Flash-Next-UD-Q2_K_XL-00003-of-00003.gguf,mtp-Qwen3.8-Flash-Next-Q8_0.gguf",
+        "layout": "dir",
+        "mountPath": "/models",
+        "sizeGb": 83.007
+      }
+    ],
+    "asset": null
+  },
+  "ids": {}
+}

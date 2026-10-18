@@ -1,0 +1,1 @@
+{"model":"ling-3.0-flash","weights":"inclusionAI/Ling-3.0-flash-int4@7a27e9eb8179b2c2eb71eb214f0dab14ec6a63f2","engine":"vllm@8a69ffad015f","set":{"ctx":131072,"mem":"0.7","kv":"fp8","tools":"ling3","think":"ling3","extra":"--max-num-batched-tokens 4096 --enable-prefix-caching --safetensors-load-strategy eager"},"card":"rtx-spark-n1x-128gb","proof":[]}
