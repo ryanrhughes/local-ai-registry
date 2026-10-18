@@ -35,6 +35,10 @@ Before each run, the rendered args were checked to equal, argument for argument,
 
 **`nemotron-3.5-super-vl.llama.cpp.128k` (2026-10-18)** is ggml-org's NVFP4 GGUF of NVIDIA's Super VL 120B-A12B, with its Q8_0 image projector and LiLiCorr drafter, at 128K context with a q8_0 cache (eight attention layers, about 1 GiB for the whole window). It passes the speed gate by 0.7 tok/s: the first 30 s of an answer ran at 15.7 tok/s, a 2,112-token answer at 19.8. It holds 83.6 GiB, so it needs the browser and other heavy apps closed; 15.3 GiB stayed free here.
 
+**`qwen3.8-flash-next.llama.cpp.256k` (2026-10-18)** is ISTA-DASLab's GSQ-RCO Q2_0 GGUF of Qwen3.8-Flash-Next (2.40 bpw; the card gives AIME25 96.67 and GPQA-Diamond 89.39 against the BF16 base's 100.00 and 91.92) with its BF16 image projector and unsloth's Q8_0 MTP head as a draft, read whole (`--load-mode none --lazy-mode off`), so its 28.8 GB n-gram table is resident.
+
+The same repository's IQ3_S build passed every gate first (31.0 tok/s, 300 tok/s prefill) with the n-gram table memory-mapped and read on demand (`--load-mode mmap --lazy-mode on`, 55 GB resident). It is not exported: a memory-mapped load reaches the GPU at under 50 MB/s on this machine, as vLLM's mmap loading did above, so it took 19.5 min to start once and over 40 min the next time, against the plugin's 30-minute limit. CPU reads of the same file run at 1.9 GB/s (`pread`) and 1.7 GB/s (touching a mapping), so the slow step is the GPU copy out of mapped pages. Read whole, Q2_0 serves in under a minute.
+
 ## Files
 
 - **`memwatch/<model>.csv`:** one per launch, every 5 s from `docker run` until the container was removed.
@@ -57,5 +61,6 @@ Before each run, the rendered args were checked to equal, argument for argument,
 | `qwen3.8-27b.vllm.256k` (NVIDIA NVFP4, DFlash, `mem` 0.6) | 36.9 | 506 | 213612 | 39 s | 92425 | 89.6 → 4.1 |
 | `nemotron-3.5-bolt-74b-a9b.llama.cpp.256k` (NVIDIA 24 GB GGUF, LiLiCorr draft, llama.cpp b11718) | 33.7 | 590 | 213575 | 10 s to serve | 35100 | 94.4 → 60.0 |
 | `nemotron-3.5-super-vl.llama.cpp.128k` (ggml-org NVFP4 GGUF, LiLiCorr draft, q8_0 KV) | 15.7 | 477 | 106257 | 57 s to serve | 83588 | 93.7 → 15.3 |
+| `qwen3.8-flash-next.llama.cpp.256k` (ISTA-DASLab GSQ-RCO Q2_0 GGUF, unsloth Q8_0 MTP draft, q8_0 KV) | 37.8 | 366 | 213612 | 59 s to serve | 52898 | 96.9 → 19.2 |
 
 Load is vLLM's "Model loading took". The plugin's whole start, from `docker run` to the API answering, took 182–288 s for each.

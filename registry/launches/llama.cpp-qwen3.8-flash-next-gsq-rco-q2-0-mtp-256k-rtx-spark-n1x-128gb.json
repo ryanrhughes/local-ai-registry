@@ -1,0 +1,119 @@
+{
+  "id": "llama.cpp-qwen3.8-flash-next-gsq-rco-q2-0-mtp-256k-rtx-spark-n1x-128gb",
+  "engine": "llama.cpp",
+  "about": "DRAFT. Qwen3.8-Flash-Next as ISTA-DASLab's GSQ-RCO Q2_0 GGUF (2.40 bpw over the transformer weights; its card gives 93.8 tok/s decode and 3.4x IQ2_XS's prefill, as Q2_0 avoids lookup-table formats) with its BF16 image projector and unsloth's Q8_0 MTP head as the draft (draft-mtp, 3 tokens). Read whole, not memory-mapped (--load-mode none, --lazy-mode off): on the RTX Spark N1X a memory-mapped load reaches the GPU at under 50 MB/s, so the IQ3_S build with its n-gram table paged from disk took 19.5 min to start once and over 40 min the next time. The n-gram shard (28.8 GB, IQ4_NL) is resident with the rest. q8_0 KV, one slot, 262,144 context. Upstream llama.cpp b11718.",
+  "image": "ghcr.io/ggml-org/llama.cpp:server-cuda13-b11718@sha256:b195b5299103b1c766cba43e2e8bb3ac843da27749c4cf818ccd10793380f702",
+  "backend": "nvidia",
+  "port": 8080,
+  "entrypoint": "/app/llama-server",
+  "args": [
+    "--model",
+    "/models/Q2_0/Qwen3.8-Flash-Next-GSQ-RCO-Q2_0-00001-of-00002.gguf",
+    "--mmproj",
+    "/models/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+    "--spec-type",
+    "draft-mtp",
+    "--model-draft",
+    "/draft/mtp-Qwen3.8-Flash-Next-Q8_0.gguf",
+    "--spec-draft-n-max",
+    "3",
+    "--alias",
+    "qwen3.8-flash-next",
+    "--host",
+    "0.0.0.0",
+    "--port",
+    "8080",
+    "--ctx-size",
+    "262144",
+    "--n-gpu-layers",
+    "999",
+    "--parallel",
+    "1",
+    "--cache-type-k",
+    "q8_0",
+    "--cache-type-v",
+    "q8_0",
+    "--flash-attn",
+    "on",
+    "--load-mode",
+    "none",
+    "--lazy-mode",
+    "off",
+    "--cache-ram",
+    "0",
+    "--jinja",
+    "--metrics",
+    "--chat-template-kwargs",
+    "{\"enable_thinking\":true}"
+  ],
+  "env": {},
+  "shm": "8g",
+  "weights": [
+    {
+      "repo": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+      "revision": "ed59f92082b1e93c0e96d60a8b11aab089b52f09",
+      "at": "/models",
+      "layout": "dir",
+      "files": [
+        "Q2_0/Qwen3.8-Flash-Next-GSQ-RCO-Q2_0-00001-of-00002.gguf",
+        "Q2_0/Qwen3.8-Flash-Next-GSQ-RCO-Q2_0-00002-of-00002.gguf",
+        "mmproj-Qwen3.8-Flash-Next-BF16.gguf"
+      ]
+    },
+    {
+      "repo": "unsloth/Qwen3.8-Flash-Next-GGUF",
+      "revision": "766911a6b7369840a91dbcd95f9f997acaab6cd6",
+      "at": "/draft",
+      "layout": "dir",
+      "files": [
+        "mtp-Qwen3.8-Flash-Next-Q8_0.gguf"
+      ]
+    }
+  ],
+  "config": null,
+  "ctx": 262144,
+  "seqs": 1,
+  "vision": true,
+  "cards": 1,
+  "plugin": {
+    "name": "Qwen3.8-Flash-Next",
+    "family": "qwen",
+    "format": "GGUF · GSQ-RCO Q2_0 + MTP draft",
+    "engine": "llama.cpp",
+    "servedName": "qwen3.8-flash-next",
+    "sizeGb": 71.47,
+    "minDriver": "535.0",
+    "scratch": null,
+    "capabilities": {
+      "chat": true,
+      "reasoning": true,
+      "tools": true,
+      "vision": true,
+      "video": false
+    },
+    "serving": {
+      "ctxTokens": 262144,
+      "kvTokens": 262144
+    },
+    "weights": [
+      {
+        "dir": "",
+        "files": "Q2_0/Qwen3.8-Flash-Next-GSQ-RCO-Q2_0-00001-of-00002.gguf,Q2_0/Qwen3.8-Flash-Next-GSQ-RCO-Q2_0-00002-of-00002.gguf,mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+        "layout": "dir",
+        "mountPath": "/models",
+        "sizeGb": 67.33
+      },
+      {
+        "dir": "",
+        "files": "mtp-Qwen3.8-Flash-Next-Q8_0.gguf",
+        "layout": "dir",
+        "mountPath": "/draft",
+        "sizeGb": 4.137
+      }
+    ],
+    "asset": null
+  },
+  "ids": {},
+  "setup": "One RTX Spark N1X. 71.5 GB of downloads (37.62 + 28.80 GB GGUF shards, 0.91 GB mmproj, 4.14 GB MTP draft), all resident with the KV.",
+  "source": "https://huggingface.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF"
+}

@@ -1258,8 +1258,8 @@
       "size_gb": 12.93
     },
     "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF@ed59f92082b1e93c0e96d60a8b11aab089b52f09": {
-      "format": "GGUF · GSQ-RCO IQ3_S + MTP (Q8_0)",
-      "size_gb": 88.67
+      "format": "GGUF · GSQ-RCO Q2_0 + MTP draft",
+      "size_gb": 71.47
     }
   }
 }

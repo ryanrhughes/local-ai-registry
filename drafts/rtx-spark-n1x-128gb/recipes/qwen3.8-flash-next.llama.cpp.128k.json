@@ -1,1 +1,0 @@
-{"model":"qwen3.8-flash-next","weights":"unsloth/Qwen3.8-Flash-Next-GGUF@766911a6b7369840a91dbcd95f9f997acaab6cd6","engine":"llama.cpp-qwen3.8-flash-next-ud-q2-k-xl-mtp-128k-rtx-spark-n1x-128gb@1ef57822219e","set":{},"card":"rtx-spark-n1x-128gb","proof":[]}
