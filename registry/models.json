@@ -16,7 +16,9 @@
     "mistral",
     "inkling",
     "ornith",
-    "lfm"
+    "lfm",
+    "minicpm",
+    "mellum"
   ],
   "max_age_days": 240,
   "models": {
@@ -768,6 +770,39 @@
         "estimated": false,
         "at": "2026-10-18"
       }
+    },
+    "minicpm-v-4.7-35b-a3b": {
+      "family": "minicpm",
+      "name": "MiniCPM-V 4.7 35B-A3B",
+      "released": "2026-10-12",
+      "reasoning": true,
+      "vision": true,
+      "about": "OpenBMB's first mixture-of-experts MiniCPM-V (35B total, 3B active) on a Qwen3.5/3.6 backbone with a SigLIP2 vision encoder that compresses image tokens early, a 256K window, and a DSpark draft for speculative decoding.",
+      "good_for": "Images, documents, OCR and video frames with fast decoding on one Spark",
+      "logo": "hf",
+      "hf": "openbmb/MiniCPM-V-4.7-35B-A3B"
+    },
+    "lfm2.5-24b-a2b": {
+      "family": "lfm",
+      "name": "LFM2.5-24B-A2B",
+      "released": "2026-10-13",
+      "reasoning": true,
+      "vision": false,
+      "about": "Liquid AI's largest LFM2.5: a 24B hybrid of short convolutions and attention with 64 experts (about 2.5B active) that always thinks before it answers, trained with agentic RL in real agent harnesses; 131K window.",
+      "good_for": "Fast local agents and tool calls; pair it with retrieval for knowledge-heavy work",
+      "logo": "hf",
+      "hf": "LiquidAI/LFM2.5-24B-A2B"
+    },
+    "mellum2.1-12b-a2.5b-thinking": {
+      "family": "mellum",
+      "name": "Mellum2.1-12B-A2.5B-Thinking",
+      "released": "2026-10-08",
+      "reasoning": true,
+      "vision": false,
+      "about": "JetBrains' 12B mixture-of-experts (2.5B active) thinking model, RL-trained in real repositories with a shell and file-editing tools; sliding-window attention on 3 of every 4 layers and a 131K window.",
+      "good_for": "Fast coding agents and hard coding or math problems on small memory",
+      "logo": "hf",
+      "hf": "JetBrains/Mellum2.1-12B-A2.5B-Thinking"
     }
   },
   "builds": {
@@ -1209,6 +1244,22 @@
     "ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF@3c91ad1be60865386af92e8147dafb32470b097d": {
       "format": "GGUF · NVFP4 (NVIDIA QAD)",
       "size_gb": 79.24
+    },
+    "openbmb/MiniCPM-V-4.7-35B-A3B-gguf@77ec40de8445999bf3076aeff9ff45d40a2713cc": {
+      "format": "GGUF · Q5_0 + DSpark (BF16)",
+      "size_gb": 25.89
+    },
+    "LiquidAI/LFM2.5-24B-A2B-GGUF@0912d33141f77e10705345a6732bfd83f0252fdc": {
+      "format": "GGUF · Q8_0",
+      "size_gb": 25.49
+    },
+    "JetBrains/Mellum2.1-12B-A2.5B-Thinking-GGUF@20b439426f1e997ba575eaccaf4856ac0f76f5d5": {
+      "format": "GGUF · Q8_0",
+      "size_gb": 12.93
+    },
+    "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF@ed59f92082b1e93c0e96d60a8b11aab089b52f09": {
+      "format": "GGUF · GSQ-RCO IQ3_S + MTP (Q8_0)",
+      "size_gb": 88.67
     }
   }
 }

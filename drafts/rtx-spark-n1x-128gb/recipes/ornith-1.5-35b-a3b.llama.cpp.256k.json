@@ -1,0 +1,1 @@
+{"model":"ornith-1.5-35b-a3b","weights":"ornith-ai/Ornith-1.5-35B-A3B-GGUF@12393612fd4f730ff5aadc23e9b8f9648aa49ceb","engine":"llama.cpp-ornith-1.5-35b-a3b-q8-0-mtp-256k-rtx-spark-n1x-128gb@b195b5299103","set":{},"card":"rtx-spark-n1x-128gb","proof":[]}

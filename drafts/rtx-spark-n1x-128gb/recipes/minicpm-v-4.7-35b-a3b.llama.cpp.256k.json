@@ -1,0 +1,1 @@
+{"model":"minicpm-v-4.7-35b-a3b","weights":"openbmb/MiniCPM-V-4.7-35B-A3B-gguf@77ec40de8445999bf3076aeff9ff45d40a2713cc","engine":"llama.cpp-minicpm-v-4.7-35b-a3b-q5-0-dspark-256k-rtx-spark-n1x-128gb@b195b5299103","set":{},"card":"rtx-spark-n1x-128gb","proof":[]}

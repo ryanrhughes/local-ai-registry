@@ -1,0 +1,93 @@
+{
+  "id": "llama.cpp-lfm2.5-24b-a2b-q8-0-128k-rtx-spark-n1x-128gb",
+  "engine": "llama.cpp",
+  "about": "DRAFT, never run. LFM2.5-24B-A2B (lfm2moe: 30 gated short-convolution blocks + 10 GQA blocks, 64 experts top-4, 2.45B active) at Q8_0 from Liquid AI's GGUF repository, text only, on the RTX Spark N1X's GPU at its native 131,072 tokens. Upstream llama.cpp b11718 (lfm2moe in llama-arch.cpp; common/chat.cpp has the LFM2.5 template handler for its Pythonic tool calls). It always thinks (the template opens <think>), so --reasoning-format deepseek. Liquid AI's sampling (temperature 0.1, top-k 50, repetition penalty 1.05; the GGUF also carries them). No draft: the LFM2.5-24B-A2B DSpark draft is 'coming soon', for SGLang. 10 attention layers x 8 KV heads x 64: 131,072 tokens is 2.5 GiB f16.",
+  "image": "ghcr.io/ggml-org/llama.cpp:server-cuda13-b11718@sha256:b195b5299103b1c766cba43e2e8bb3ac843da27749c4cf818ccd10793380f702",
+  "backend": "nvidia",
+  "port": 8080,
+  "entrypoint": "/app/llama-server",
+  "args": [
+    "--model",
+    "/models/LFM2.5-24B-A2B-Q8_0.gguf",
+    "--alias",
+    "lfm2.5-24b-a2b",
+    "--host",
+    "0.0.0.0",
+    "--port",
+    "8080",
+    "--ctx-size",
+    "131072",
+    "--n-gpu-layers",
+    "999",
+    "--parallel",
+    "1",
+    "--flash-attn",
+    "on",
+    "--load-mode",
+    "none",
+    "--cache-ram",
+    "0",
+    "--temp",
+    "0.1",
+    "--top-k",
+    "50",
+    "--repeat-penalty",
+    "1.05",
+    "--jinja",
+    "--reasoning-format",
+    "deepseek",
+    "--metrics"
+  ],
+  "env": {},
+  "shm": "8g",
+  "weights": [
+    {
+      "repo": "LiquidAI/LFM2.5-24B-A2B-GGUF",
+      "revision": "0912d33141f77e10705345a6732bfd83f0252fdc",
+      "at": "/models",
+      "layout": "dir",
+      "files": [
+        "LFM2.5-24B-A2B-Q8_0.gguf"
+      ]
+    }
+  ],
+  "config": null,
+  "ctx": 131072,
+  "seqs": 1,
+  "vision": false,
+  "cards": 1,
+  "plugin": {
+    "name": "LFM2.5-24B-A2B",
+    "family": "lfm",
+    "format": "GGUF · Q8_0",
+    "engine": "llama.cpp",
+    "servedName": "lfm2.5-24b-a2b",
+    "sizeGb": 25.494,
+    "minDriver": "535.0",
+    "scratch": null,
+    "capabilities": {
+      "chat": true,
+      "reasoning": true,
+      "tools": true,
+      "vision": false,
+      "video": false
+    },
+    "serving": {
+      "ctxTokens": 131072,
+      "kvTokens": 131072
+    },
+    "weights": [
+      {
+        "dir": "",
+        "files": "LFM2.5-24B-A2B-Q8_0.gguf",
+        "layout": "dir",
+        "mountPath": "/models",
+        "sizeGb": 25.494
+      }
+    ],
+    "asset": null
+  },
+  "ids": {},
+  "setup": "One RTX Spark N1X. 25.5 GB of downloads (one Q8_0 GGUF). Expected resident memory ~27 GiB at 131,072 tokens (23.7 GiB weights, 2.5 GiB f16 KV, compute buffers). Licence: LFM Open License v1.0 (Hub 'other'): Apache-style, but commercial use is licensed only below US$10M annual revenue.",
+  "source": "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B-GGUF"
+}
