@@ -25,6 +25,10 @@ Each launch ran the way the Local AI plugin runs it:
 
 Before each run, the rendered args were checked to equal, argument for argument, the ones the plugin's export serves for the card, plus the eager flag. The gates ran against the engine's bridge address. The plugin's gateway would have cut the 213K-token context gate off at its 600 s upstream timeout.
 
+## Later runs
+
+**`qwen3.6-35b-a3b.vllm.256k` (2026-10-18)** is NVIDIA's NVFP4 checkpoint with its own MTP heads (no draft to fetch) at `mem` 0.6. The first attempt at 0.7 was stopped by the memory watchdog at 2.8 GiB `MemAvailable`: eager loading holds the checkpoint in host memory while it is copied to the GPU, and that morning's desktop held about 28 GiB, not 22. At 0.6 (71.7 GiB) the machine kept at least 11.5 GiB free throughout.
+
 ## Files
 
 - **`memwatch/<model>.csv`:** one per launch, every 5 s from `docker run` until the container was removed.
@@ -43,5 +47,6 @@ Before each run, the rendered args were checked to equal, argument for argument,
 | `qwen3.8-27b-awq-fp8.vllm.256k` | 23.8 | 329 | 213612 | 39 s | 85961 | 97.1 → 11.0 |
 | `gemma-4-31b-it-awq-4bit.vllm.256k` | 28.3 | 82 | 213576 | 30 s | 85354 | 97.1 → 8.2 |
 | `qwen3.8-27b-awq-bf16-int4.vllm.256k` | 15.7 | 330 | 213612 | 72 s | 87115 | 97.3 → 9.7 |
+| `qwen3.6-35b-a3b.vllm.256k` (NVFP4, MTP 2, `mem` 0.6) | 103.0 | 1184 | 213570 | 78 s | 62656 | 90.7 → 11.5 |
 
 Load is vLLM's "Model loading took". The plugin's whole start, from `docker run` to the API answering, took 182–288 s for each.
