@@ -2,7 +2,7 @@ import json
 import unittest
 
 import lab
-from export_plugin import base_model, build, exportable, quant, speed
+from export_plugin import DRAFT_MOUNT, base_model, build, exportable, mount_drafts, quant, speed
 
 
 class ExportFlagsTest(unittest.TestCase):
@@ -144,6 +144,56 @@ class DetailsTest(unittest.TestCase):
         for e in n1x["recipes"]:
             self.assertTrue({"model", "quant", "speed"} <= set(e), e["id"])
             self.assertIsInstance(e["speed"]["decode"], (int, float))
+
+
+class DraftWeightsTest(unittest.TestCase):
+    """Plugin 6.17's engine has no route out: v3 mounts every Hugging Face speculative draft as pinned weights."""
+
+    def spec_recipe(self, spec):
+        return {"id": "x", "sizeGb": 28.845, "weights": [{"repository": "a/b", "revision": "0" * 40, "sizeGb": 28.845,
+                                                          "layout": "dir", "mountPath": "/models", "dir": "b-00000000", "files": ""}],
+                "launch": {"arguments": ["/models/b-00000000", "--speculative-config", spec, "--port", "8000"]}}
+
+    def test_hub_draft_becomes_mounted_weights(self):
+        spec = '{"method":"dflash","model":"incoai/Qwen3.8-27B-DFlash2","revision":"015e795645c74b1a0eeef3b570031fb62e769bc5","num_speculative_tokens":7}'
+        args = ["/models/b-00000000", "--speculative-config", spec, "--port", "8000"]
+        e = mount_drafts(self.spec_recipe(spec))
+        self.assertEqual(e["weights"][1], {"repository": "incoai/Qwen3.8-27B-DFlash2", "revision": "015e795645c74b1a0eeef3b570031fb62e769bc5",
+                                           "sizeGb": 3.849, "layout": "dir", "mountPath": "/draft", "dir": "Qwen3.8-27B-DFlash2-015e7956", "files": ""})
+        self.assertEqual(e["launch"]["arguments"], [args[0], args[1], '{"method":"dflash","model":"/draft/Qwen3.8-27B-DFlash2-015e7956","num_speculative_tokens":7}', *args[3:]])
+        self.assertEqual(e["sizeGb"], 32.694)
+
+    def test_local_or_absent_drafts_stay(self):
+        for spec in ('{"method":"mtp","num_speculative_tokens":3}', '{"method":"eagle3","model":"/models/draft","num_speculative_tokens":3}'):
+            e = mount_drafts(self.spec_recipe(spec))
+            self.assertEqual(len(e["weights"]), 1)
+            self.assertEqual(e["launch"]["arguments"][2], spec)
+
+    def test_unpinned_or_unsized_draft_fails(self):
+        with self.assertRaises(AssertionError):
+            mount_drafts(self.spec_recipe('{"method":"mtp","model":"google/x","revision":"main"}'))
+        with self.assertRaises(AssertionError):
+            mount_drafts(self.spec_recipe('{"method":"mtp","model":"google/x","revision":"%s"}' % ("1" * 40)))
+
+    def test_no_v3_launch_names_a_hub_draft(self):
+        v2, v3 = json.loads(build(2)), json.loads(build(3))
+        drafts = 0
+        for card, hw in v3["hardware"].items():
+            for e in hw["recipes"]:
+                args = e["launch"]["arguments"] or []
+                for i, a in enumerate(args[:-1]):
+                    if a == "--speculative-config":
+                        model = json.loads(args[i + 1]).get("model")
+                        self.assertTrue(model is None or model.startswith("/"), f"{card} {e['id']}: {model}")
+                        if model and model.startswith(DRAFT_MOUNT + "/"):
+                            drafts += 1
+                            self.assertIn(model[len(DRAFT_MOUNT) + 1:], [w.get("dir") for w in e["weights"] if w["mountPath"] == DRAFT_MOUNT])
+                if len(e["weights"]) > 1:  # a multi-weights recipe's size is the total to download
+                    self.assertAlmostEqual(e["sizeGb"], sum(w["sizeGb"] for w in e["weights"]), places=2, msg=e["id"])
+        self.assertGreaterEqual(drafts, 12)
+        # v2 is untouched: its plugins give the engine a network
+        self.assertTrue(any('"incoai/Qwen3.8-27B-DFlash2"' in a for hw in v2["hardware"].values() for e in hw["recipes"]
+                            for a in e["launch"]["arguments"] or []))
 
 
 if __name__ == "__main__":

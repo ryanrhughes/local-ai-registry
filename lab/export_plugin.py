@@ -172,6 +172,46 @@ def quant(fmt):
     return tail if tail and len(tail) <= 16 else None
 
 
+# Speculative drafts a vLLM launch names by Hugging Face repository, pinned: the size (GB, 1e9 bytes) of every file at
+# that revision, as the Hub's tree API lists it. Plugin 6.17 runs the engine with no route out, so v3 hands the plugin
+# each draft as weights to download and mounts it, and the launch reads it from there.
+DRAFT_SIZES_GB = {
+    "incoai/Qwen3.8-27B-DFlash2@015e795645c74b1a0eeef3b570031fb62e769bc5": 3.849,
+    "google/gemma-4-12B-it-assistant@46d4c6f13f0ac0ad827b915669b8df9b81c64c51": 0.878,
+    "google/gemma-4-26B-A4B-it-assistant@6e5aaaf4c42b98394530b8fda2e95cadd65c151c": 0.872,
+    "google/gemma-4-31B-it-assistant@627c5ec1458b9086b841a91e0512fd31fd2fbbf1": 0.971,
+}
+DRAFT_MOUNT = "/draft"
+
+
+def mount_drafts(e):
+    """v3: a `--speculative-config` whose draft `model` is a Hugging Face repository becomes a pinned `weights` entry
+    mounted under /draft, the config naming that folder instead (its `revision` dropped: the folder is the pin), and
+    the recipe's size counting it. Every other argument stays as it was."""
+    # copies: the launch's own lists may be shared with what lab.render returns
+    args = e["launch"]["arguments"] = list(e["launch"]["arguments"] or [])
+    e["weights"] = list(e["weights"])
+    for i, a in enumerate(args[:-1]):
+        if a != "--speculative-config":
+            continue
+        spec = json.loads(args[i + 1])
+        repo = spec.get("model") or ""
+        if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
+            continue  # a path in the image or the weights, or a method with no draft of its own
+        assert json.dumps(spec, separators=(",", ":"), ensure_ascii=False) == args[i + 1], f"{e['id']}: speculative config is not compact JSON"
+        rev = spec.get("revision") or ""
+        assert re.fullmatch(r"[0-9a-f]{40}", rev), f"{e['id']}: draft {repo} is not pinned to a full revision"
+        size = DRAFT_SIZES_GB.get(f"{repo}@{rev}")
+        assert size, f"{e['id']}: draft {repo}@{rev} has no size in DRAFT_SIZES_GB"
+        folder = f"{repo.rsplit('/', 1)[1]}-{rev[:8]}"
+        e["weights"].append({"repository": repo, "revision": rev, "sizeGb": size, "layout": "dir",
+                             "mountPath": DRAFT_MOUNT, "dir": folder, "files": ""})
+        args[i + 1] = json.dumps({k: (f"{DRAFT_MOUNT}/{folder}" if k == "model" else v) for k, v in spec.items() if k != "revision"},
+                                 separators=(",", ":"), ensure_ascii=False)
+        e["sizeGb"] = round(e["sizeGb"] + size, 3)  # like every multi-weights recipe: the total to download
+    return e
+
+
 def details(r, e, meta):
     """v3's optional fields for picking a model: the base model, the build's quant label and the measured speed."""
     q = quant(e["format"]) or quant((meta["builds"].get(r.get("weights")) or {}).get("format"))
@@ -266,6 +306,7 @@ def build(version=2):
                                                               **aa(cat["recipes"][k], meta)) for k in ok]}
             if version >= 3:  # optional fields that help pick a model; older plugins ignore them
                 for k, e in zip(ok, hw[card]["recipes"]):
+                    mount_drafts(e)
                     e.update(details(cat["recipes"][k], e, meta))
                 hw[card] = {**({"name": c["name"]} if c.get("name") else {}),
                             **({"bandwidthGbS": c["bandwidth_gb_s"]} if c.get("bandwidth_gb_s") else {}), **hw[card]}
