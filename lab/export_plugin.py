@@ -152,8 +152,14 @@ def quant(fmt):
     if "GGUF" in up or (tokens and GGUF_QUANT.match(fmt)):
         if mix := re.search(r"(?<![A-Za-z0-9])(I?Q\d)-mix", fmt):
             return f"{mix.group(1)} mix"
-        if len(tokens) != 1 or "MIXED" in up:
+        # NVFP4 carried in a GGUF names no Q-type: it is the build's own format
+        if not tokens and "NVFP4" in up:
+            return "NVFP4"
+        if "MIXED" in up or not tokens:
             return "GGUF mixed"
+        # a named mix of types reads after its first, the one most of the weights take: "IQ2_XXS mix"
+        if len(tokens) > 1:
+            return f"{tokens[0]} mix"
         tag = next((t for t in ("QAT", "QAD") if re.search(rf"\b{t}\b", up)), None)
         return f"{tag} {tokens[0]}" if tag else tokens[0]
     if "EXL3" in up:
