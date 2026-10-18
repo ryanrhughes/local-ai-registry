@@ -1,0 +1,111 @@
+{
+  "id": "tensorfold-nemotron-3.5-bolt-74b-a9b-24gb-lilicorr-256k-rtx-spark-n1x-128gb",
+  "engine": "tensorfold",
+  "about": "DRAFT, never run. Nemotron 3.5 Bolt 74B-A9B (NVIDIA's 24 GB safetensors checkpoint) with NVIDIA's LiLiCorr drafter on TensorFold's Zig engine plus Mia's Bolt backend (MiaAI-Lab/Nemotron-3.5-Bolt-TensorFold-DGX-Spark@6f61d772, TensorFold 46a08c18, patches 5e11cf1ed295). Mia's published image for that exact hash: linux/arm64 only, one v2 manifest, AOT sm121 kernels, built 2026-10-16. Mia's start.sh runs it with --ipc=host --network host --ulimit memlock=-1 --ulimit stack=67108864 and a writable kernel cache at /cache; this launch drops all four (the plugin allows none of them) and keeps HF_HUB_OFFLINE=1. Parallel 4 instead of Mia's 16 and prompt cache 4 GiB instead of 8, for the desktop beside it. On one DGX Spark Mia measured 71.0 tok/s prose / 114.1 tok/s code for one request, 166.6 tok/s for 8, prefill 1,375 tok/s at 32K, 51.1 GB loaded with 16 streams.",
+  "image": "ghcr.io/miaai-lab/nemotron-3.5-bolt-tensorfold-dgx-spark:zig-46a08c1-5e11cf1ed295@sha256:9d39df6d1526ede3d0afb983d122643284ae4a92f50c07ee544c47e2b7befa1e",
+  "backend": "nvidia",
+  "port": 8888,
+  "entrypoint": null,
+  "args": [
+    "tensorfold-native",
+    "serve",
+    "/root/.cache/huggingface/hub/models--nvidia--NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB/snapshots/a326822af111290f2af5ac59ef4b5040347dabc4",
+    "--name",
+    "Nemotron-3.5-Bolt",
+    "--host",
+    "0.0.0.0",
+    "--port",
+    "8888",
+    "--context",
+    "262144",
+    "--parallel",
+    "4",
+    "--max-tokens",
+    "32768",
+    "--temperature",
+    "1.0",
+    "--top-p",
+    "0.95",
+    "--prompt-cache-gib",
+    "4",
+    "--thinking",
+    "--vision",
+    "--vision-max-images",
+    "64",
+    "--vision-max-videos",
+    "4",
+    "--vision-image-tokens",
+    "262144",
+    "--vision-video-tokens",
+    "131072"
+  ],
+  "env": {
+    "HF_HUB_OFFLINE": "1",
+    "TENSORFOLD_NO_UPDATE_CHECK": "1",
+    "TENSORFOLD_MEMORY_RESERVE_GIB": "12",
+    "BOLT_DRAFT": "/root/.cache/huggingface/hub/models--nvidia--NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB-LiLiCorr/snapshots/4c6a5613b6d887194a3a5493e3a18a5b3930bb86",
+    "BOLT_KV": "bf16",
+    "BOLT_KV_PIN": "0"
+  },
+  "shm": "16g",
+  "weights": [
+    {
+      "repo": "nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB",
+      "revision": "a326822af111290f2af5ac59ef4b5040347dabc4",
+      "at": "/root/.cache/huggingface",
+      "layout": "hub"
+    },
+    {
+      "repo": "nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB-LiLiCorr",
+      "revision": "4c6a5613b6d887194a3a5493e3a18a5b3930bb86",
+      "at": "/root/.cache/huggingface",
+      "layout": "hub"
+    }
+  ],
+  "config": null,
+  "ctx": 262144,
+  "seqs": 4,
+  "vision": true,
+  "cards": 1,
+  "plugin": {
+    "name": "Nemotron 3.5 Bolt 74B-A9B",
+    "family": "nemotron",
+    "format": "safetensors · NVIDIA 24 GB (IQ2_XXS / NVFP4 / Q8_0) + LiLiCorr",
+    "engine": "tensorfold",
+    "servedName": "Nemotron-3.5-Bolt",
+    "sizeGb": 25.078,
+    "minDriver": "580.0",
+    "scratch": null,
+    "capabilities": {
+      "chat": true,
+      "reasoning": true,
+      "tools": true,
+      "vision": true,
+      "video": true
+    },
+    "serving": {
+      "ctxTokens": 262144,
+      "kvTokens": 1048576
+    },
+    "weights": [
+      {
+        "dir": "",
+        "files": "",
+        "layout": "hub",
+        "mountPath": "/root/.cache/huggingface",
+        "sizeGb": 24.12
+      },
+      {
+        "dir": "",
+        "files": "",
+        "layout": "hub",
+        "mountPath": "/root/.cache/huggingface",
+        "sizeGb": 0.958
+      }
+    ],
+    "asset": null
+  },
+  "ids": {},
+  "setup": "Revisions are Mia's pins (the later Hub commits c6cc2e8f / abd47806 only touch README.md and explainability.md); the recipe's contract/bolt.json checks the checkpoint. ~25 GB of downloads (24.12 GB checkpoint + 0.96 GB drafter) plus the 11.4 GB image. Two things to prove before this can leave drafts: (1) that the engine runs without --ulimit stack=67108864, --ipc=host and a writable /cache (CUDA_CACHE_PATH=/cache/nv lands in the container layer instead); (2) provenance: the image is pushed by hand (scripts/publish-image.sh), with no build attestation, so lab/export_plugin.py's NO_PROVENANCE rule means it needs an attested rebuild of the same Dockerfile (nvcr.io/nvidia/pytorch:26.07-py3 base, Zig 0.17.0) before the plugin is handed it.",
+  "source": "https://github.com/MiaAI-Lab/Nemotron-3.5-Bolt-TensorFold-DGX-Spark/tree/6f61d7727ae3fac010f30e240799cc884d295f6e"
+}

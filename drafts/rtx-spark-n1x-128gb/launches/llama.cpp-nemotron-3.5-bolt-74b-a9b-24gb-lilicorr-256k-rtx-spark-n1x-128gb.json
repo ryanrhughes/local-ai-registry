@@ -1,0 +1,122 @@
+{
+  "id": "llama.cpp-nemotron-3.5-bolt-74b-a9b-24gb-lilicorr-256k-rtx-spark-n1x-128gb",
+  "engine": "llama.cpp",
+  "about": "DRAFT, never run. Nemotron 3.5 Bolt 74B-A9B, NVIDIA's QAD 24 GB GGUF (IQ2_XXS experts, NVFP4 Mamba, Q8_0 embeddings/head) with its image projector and NVIDIA's LiLiCorr GGUF drafter (draft-dflash, 7 tokens), all on the RTX Spark N1X's GPU. NVIDIA's own '32GB recipe for RTX Spark 128GB' from the GGUF card: batch 4096 / ubatch 2048, 262,144 context, one slot, flash attention. Upstream llama.cpp b11718 (547208dc, CUDA 13.4.1, one index digest over linux/amd64 + linux/arm64): Bolt/Super VL support landed in b11658+ (#30520), LiLiCorr drafts in b11641 (#30506), faster MMVQ for low-bit types in b11713 (#30517). --load-mode none as in the N1X flash-next draft. 24.75 GB of weights; the KV is 8 KB a token (8 attention layers x 2 KV heads), so 262,144 tokens is ~2 GiB bf16.",
+  "image": "ghcr.io/ggml-org/llama.cpp:server-cuda13-b11718@sha256:b195b5299103b1c766cba43e2e8bb3ac843da27749c4cf818ccd10793380f702",
+  "backend": "nvidia",
+  "port": 8080,
+  "entrypoint": "/app/llama-server",
+  "args": [
+    "--model",
+    "/models/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB.gguf",
+    "--mmproj",
+    "/models/mmproj-NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB.gguf",
+    "--spec-type",
+    "draft-dflash",
+    "--spec-draft-model",
+    "/draft/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB-LiLiCorr.gguf",
+    "--spec-draft-n-max",
+    "7",
+    "--spec-draft-ngl",
+    "999",
+    "--alias",
+    "nemotron-3.5-bolt",
+    "--host",
+    "0.0.0.0",
+    "--port",
+    "8080",
+    "--ctx-size",
+    "262144",
+    "--n-gpu-layers",
+    "999",
+    "--parallel",
+    "1",
+    "--batch-size",
+    "4096",
+    "--ubatch-size",
+    "2048",
+    "--flash-attn",
+    "on",
+    "--load-mode",
+    "none",
+    "--cache-ram",
+    "0",
+    "--temp",
+    "1.0",
+    "--top-p",
+    "0.95",
+    "--jinja",
+    "--reasoning-format",
+    "deepseek",
+    "--metrics"
+  ],
+  "env": {},
+  "shm": "8g",
+  "weights": [
+    {
+      "repo": "nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB-GGUF",
+      "revision": "e0fecb69cb3e5e4c5e8a056fa2aec98c78e91246",
+      "at": "/models",
+      "layout": "dir",
+      "files": [
+        "NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB.gguf",
+        "mmproj-NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB.gguf"
+      ]
+    },
+    {
+      "repo": "nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB-LiLiCorr-GGUF",
+      "revision": "182d2987939e12f458298b5d5f6ef98912f4ad6c",
+      "at": "/draft",
+      "layout": "dir",
+      "files": [
+        "NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB-LiLiCorr.gguf"
+      ]
+    }
+  ],
+  "config": null,
+  "ctx": 262144,
+  "seqs": 1,
+  "vision": true,
+  "cards": 1,
+  "plugin": {
+    "name": "Nemotron 3.5 Bolt 74B-A9B",
+    "family": "nemotron",
+    "format": "GGUF · NVIDIA 24 GB (IQ2_XXS / NVFP4 / Q8_0) + LiLiCorr",
+    "engine": "llama.cpp",
+    "servedName": "nemotron-3.5-bolt",
+    "sizeGb": 24.749,
+    "minDriver": "535.0",
+    "scratch": null,
+    "capabilities": {
+      "chat": true,
+      "reasoning": true,
+      "tools": true,
+      "vision": true,
+      "video": false
+    },
+    "serving": {
+      "ctxTokens": 262144,
+      "kvTokens": 262144
+    },
+    "weights": [
+      {
+        "dir": "",
+        "files": "NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB.gguf,mmproj-NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB.gguf",
+        "layout": "dir",
+        "mountPath": "/models",
+        "sizeGb": 23.749
+      },
+      {
+        "dir": "",
+        "files": "NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB-LiLiCorr.gguf",
+        "layout": "dir",
+        "mountPath": "/draft",
+        "sizeGb": 1.0
+      }
+    ],
+    "asset": null
+  },
+  "ids": {},
+  "setup": "One RTX Spark N1X. ~25 GB of downloads (22.02 GB GGUF + 1.73 GB mmproj + 1.00 GB LiLiCorr GGUF). Expected resident memory ~31 GiB at 262,144 tokens with the drafter (Classmethod measured 31.4 GiB on a DGX Spark with the same flags), so the desktop keeps plenty. Reference speeds, not measured here: DGX Spark llama.cpp 39.5 tok/s without drafts, 61.6 tok/s with the LiLiCorr drafter (dev.classmethod.jp, 2026-10-16); NVIDIA cites ~84 tok/s on RTX Spark. No network at runtime: the drafter is a pinned GGUF mounted at /draft.",
+  "source": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB-GGUF"
+}

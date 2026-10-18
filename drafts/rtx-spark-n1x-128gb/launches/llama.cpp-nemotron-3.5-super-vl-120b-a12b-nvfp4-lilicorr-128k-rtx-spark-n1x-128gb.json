@@ -1,0 +1,111 @@
+{
+  "id": "llama.cpp-nemotron-3.5-super-vl-120b-a12b-nvfp4-lilicorr-128k-rtx-spark-n1x-128gb",
+  "engine": "llama.cpp",
+  "about": "DRAFT, never run. Nemotron 3.5 Super VL 120B-A12B, ggml-org's GGUF conversion of NVIDIA's QAD NVFP4 checkpoint (AA index within 0.1 of BF16), with the Q8_0 image projector and the NVFP4 LiLiCorr drafter from the same repository (draft-dflash, 7 tokens). vLLM can't serve it here: NVIDIA's DGX Spark recipe needs vLLM 0.32 and --gpu-memory-utilization 0.75 for the 75 GB checkpoint, past the N1X's practical 0.6. Upstream llama.cpp b11718 (CUDA 13.4.1, native NVFP4 W4A4 on Blackwell). 88 layers, only 8 attention (2 KV heads x 128), so the KV is 8 KB a token: 131,072 tokens is 1 GiB bf16, q8_0 halves it. 79.2 GB (73.8 GiB) of weights leave ~11 GiB for KV, Mamba state, compute buffers and the drafter under a ~85 GiB budget; ubatch 1024 keeps the compute buffer down. If it does not fit beside the desktop, the fallback is unsloth UD-Q3_K_XL (65.76 GB, 75a58290) with the same flags.",
+  "image": "ghcr.io/ggml-org/llama.cpp:server-cuda13-b11718@sha256:b195b5299103b1c766cba43e2e8bb3ac843da27749c4cf818ccd10793380f702",
+  "backend": "nvidia",
+  "port": 8080,
+  "entrypoint": "/app/llama-server",
+  "args": [
+    "--model",
+    "/models/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-NVFP4.gguf",
+    "--mmproj",
+    "/models/mmproj-NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-Q8_0.gguf",
+    "--spec-type",
+    "draft-dflash",
+    "--spec-draft-model",
+    "/models/lilicorr-NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-NVFP4.gguf",
+    "--spec-draft-n-max",
+    "7",
+    "--spec-draft-ngl",
+    "999",
+    "--alias",
+    "nemotron-3.5-super-vl",
+    "--host",
+    "0.0.0.0",
+    "--port",
+    "8080",
+    "--ctx-size",
+    "131072",
+    "--n-gpu-layers",
+    "999",
+    "--parallel",
+    "1",
+    "--batch-size",
+    "2048",
+    "--ubatch-size",
+    "1024",
+    "--flash-attn",
+    "on",
+    "--cache-type-k",
+    "q8_0",
+    "--cache-type-v",
+    "q8_0",
+    "--load-mode",
+    "none",
+    "--cache-ram",
+    "0",
+    "--temp",
+    "1.0",
+    "--top-p",
+    "0.95",
+    "--jinja",
+    "--reasoning-format",
+    "deepseek",
+    "--metrics"
+  ],
+  "env": {},
+  "shm": "8g",
+  "weights": [
+    {
+      "repo": "ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF",
+      "revision": "3c91ad1be60865386af92e8147dafb32470b097d",
+      "at": "/models",
+      "layout": "dir",
+      "files": [
+        "NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-NVFP4.gguf",
+        "mmproj-NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-Q8_0.gguf",
+        "lilicorr-NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-NVFP4.gguf"
+      ]
+    }
+  ],
+  "config": null,
+  "ctx": 131072,
+  "seqs": 1,
+  "vision": true,
+  "cards": 1,
+  "plugin": {
+    "name": "Nemotron 3.5 Super VL 120B-A12B",
+    "family": "nemotron",
+    "format": "GGUF · NVFP4 (NVIDIA QAD) + LiLiCorr",
+    "engine": "llama.cpp",
+    "servedName": "nemotron-3.5-super-vl",
+    "sizeGb": 79.24,
+    "minDriver": "535.0",
+    "scratch": null,
+    "capabilities": {
+      "chat": true,
+      "reasoning": true,
+      "tools": true,
+      "vision": true,
+      "video": false
+    },
+    "serving": {
+      "ctxTokens": 131072,
+      "kvTokens": 131072
+    },
+    "weights": [
+      {
+        "dir": "",
+        "files": "NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-NVFP4.gguf,mmproj-NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-Q8_0.gguf,lilicorr-NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-NVFP4.gguf",
+        "layout": "dir",
+        "mountPath": "/models",
+        "sizeGb": 79.24
+      }
+    ],
+    "asset": null
+  },
+  "ids": {},
+  "setup": "One RTX Spark N1X with ~80 GiB MemAvailable at start (close the browser first; watch MemAvailable with the memwatch script and stop below ~8 GiB). ~79 GB of downloads (76.92 GB NVFP4 GGUF + 0.97 GB mmproj + 1.35 GB LiLiCorr). No measured Spark speed published yet; the older Nemotron 3 Super did 19.5 tok/s on a DGX Spark in llama.cpp Q4_K, so expect ~20 tok/s without drafts and more with LiLiCorr.",
+  "source": "https://huggingface.co/ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF"
+}

@@ -1,0 +1,44 @@
+{
+  "models": {
+    "nemotron-3.5-super-vl": {
+      "family": "nemotron",
+      "name": "Nemotron 3.5 Super VL 120B-A12B",
+      "released": "2026-10-15",
+      "reasoning": true,
+      "vision": true,
+      "about": "NVIDIA's hybrid Mamba-Transformer LatentMoE (120B total, 12B active) with a C-RADIO vision encoder, a 1M-token window and native MTP; released in NVFP4 with quantization-aware distillation from BF16.",
+      "good_for": "The smartest Nemotron one 128 GB Spark runs: agents, coding, documents and images",
+      "logo": "hf",
+      "hf": "nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-NVFP4",
+      "aa": {
+        "index": 26.5,
+        "name": "Nemotron 3.5 Super VL",
+        "slug": "nemotron-3-5-super-vl",
+        "estimated": false,
+        "at": "2026-10-18"
+      }
+    }
+  },
+  "models_update": {
+    "nemotron-3.5-bolt-74b-a9b": {
+      "aa": {
+        "index": 21.4,
+        "name": "Nemotron 3.5 Bolt 74B-A9B",
+        "slug": "nemotron-3-5-bolt-74b-a9b",
+        "estimated": false,
+        "at": "2026-10-18"
+      }
+    }
+  },
+  "builds": {
+    "ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF@3c91ad1be60865386af92e8147dafb32470b097d": {
+      "format": "GGUF · NVFP4 (NVIDIA QAD)",
+      "size_gb": 79.24
+    },
+    "nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB@a326822af111290f2af5ac59ef4b5040347dabc4": {
+      "format": "ModelOpt · IQ2_XXS / NVFP4 / Q8_0 (NVIDIA 24 GB)",
+      "size_gb": 24.12
+    }
+  },
+  "note": "Sizes are the files each launch mounts (GB, 1e9 bytes), drafters included: Bolt GGUF 23.749 + LiLiCorr GGUF 1.000; Super VL NVFP4 GGUF 76.92 + mmproj Q8_0 0.97 + LiLiCorr 1.35; Bolt safetensors 24.12 (+0.96 LiLiCorr in the TensorFold launch)."
+}
