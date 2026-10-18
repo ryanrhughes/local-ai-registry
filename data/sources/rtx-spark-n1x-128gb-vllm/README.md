@@ -29,6 +29,8 @@ Before each run, the rendered args were checked to equal, argument for argument,
 
 **`qwen3.6-35b-a3b.vllm.256k` (2026-10-18)** is NVIDIA's NVFP4 checkpoint with its own MTP heads (no draft to fetch) at `mem` 0.6. The first attempt at 0.7 was stopped by the memory watchdog at 2.8 GiB `MemAvailable`: eager loading holds the checkpoint in host memory while it is copied to the GPU, and that morning's desktop held about 28 GiB, not 22. At 0.6 (71.7 GiB) the machine kept at least 11.5 GiB free throughout.
 
+**`qwen3.8-27b.vllm.256k` (2026-10-18)** is NVIDIA's NVFP4 checkpoint with the same DFlash draft as the AWQ builds, at `mem` 0.6: 36.9 tok/s against the FP8 build's 23.8 at the same AA index. `MemAvailable` dipped to 4.1 GiB for ten seconds while vLLM captured CUDA graphs (GPU allocation 92 GiB, above the 71.7 GiB share, during start only); it held 11+ GiB otherwise. The start took 16 minutes with a 25 GB download running beside it on the same disk.
+
 ## Files
 
 - **`memwatch/<model>.csv`:** one per launch, every 5 s from `docker run` until the container was removed.
@@ -48,5 +50,6 @@ Before each run, the rendered args were checked to equal, argument for argument,
 | `gemma-4-31b-it-awq-4bit.vllm.256k` | 28.3 | 82 | 213576 | 30 s | 85354 | 97.1 → 8.2 |
 | `qwen3.8-27b-awq-bf16-int4.vllm.256k` | 15.7 | 330 | 213612 | 72 s | 87115 | 97.3 → 9.7 |
 | `qwen3.6-35b-a3b.vllm.256k` (NVFP4, MTP 2, `mem` 0.6) | 103.0 | 1184 | 213570 | 78 s | 62656 | 90.7 → 11.5 |
+| `qwen3.8-27b.vllm.256k` (NVIDIA NVFP4, DFlash, `mem` 0.6) | 36.9 | 506 | 213612 | 39 s | 92425 | 89.6 → 4.1 |
 
 Load is vLLM's "Model loading took". The plugin's whole start, from `docker run` to the API answering, took 182–288 s for each.
