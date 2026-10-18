@@ -41,7 +41,7 @@ The same repository's IQ3_S build passed every gate first (31.0 tok/s, 300 tok/s
 
 **Ornith-1.5-35B-A3B and LFM2.5-24B-A2B (2026-10-18)** run whole from their Q8_0 GGUFs on llama.cpp b11718 and leave the desktop 50 GiB or more.
 
-**Not exported, 2026-10-18:** Mellum2.1-12B-A2.5B-Thinking (Q8_0) passed load, chat, reasoning and tools, then on the context gate read the 106K-token prompt in 5 min and thought for 40 min at 3–4 tok/s without answering; the run was stopped. MiniCPM-V 4.7 35B-A3B (Q5_0 with its BF16 DSpark draft at 15 tokens) decoded at 5.0 tok/s and failed the reasoning, context and speed gates.
+**Not exported, 2026-10-18:** Mellum2.1-12B-A2.5B-Thinking (Q8_0) passed load, chat, reasoning and tools, then on the context gate read the 106K-token prompt in 5 min and thought for 40 min at 3–4 tok/s without answering; the run was stopped. MiniCPM-V 4.7 35B-A3B (Q5_0 with its BF16 DSpark draft at 15 tokens) decoded at 5.0 tok/s and failed the reasoning, context and speed gates. Without the draft it decoded at 18.2 tok/s and passed every gate but context: the 213,570-token prompt took 27 min to read (about 160 tok/s) and the answer came back empty.
 
 ## Files
 

@@ -1,1 +1,0 @@
-{"model":"mellum2.1-12b-a2.5b-thinking","weights":"JetBrains/Mellum2.1-12B-A2.5B-Thinking-GGUF@20b439426f1e997ba575eaccaf4856ac0f76f5d5","engine":"llama.cpp-mellum2.1-12b-a2.5b-thinking-q8-0-128k-rtx-spark-n1x-128gb@b195b5299103","set":{},"card":"rtx-spark-n1x-128gb","proof":[]}
