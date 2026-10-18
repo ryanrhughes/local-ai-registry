@@ -1,0 +1,69 @@
+{
+ "recipe": {
+  "model": "nemotron-3.5-bolt-74b-a9b",
+  "weights": "nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB-GGUF@e0fecb69cb3e5e4c5e8a056fa2aec98c78e91246",
+  "engine": "llama.cpp-nemotron-3.5-bolt-74b-a9b-24gb-lilicorr-256k-rtx-spark-n1x-128gb@b195b5299103",
+  "set": {},
+  "card": "rtx-spark-n1x-128gb"
+ },
+ "where": {
+  "on": "owner",
+  "gpu": "NVIDIA RTX Spark N1X"
+ },
+ "passed": true,
+ "proof": {
+  "at": "2026-10-18",
+  "on": "owner",
+  "gpu": "NVIDIA RTX Spark N1X",
+  "launch_sha256": "051f49e007b2a8920af04fd06968d1baf6f8a849325e513add4545da7a10b5f3",
+  "gates": "load chat reasoning tools context speed",
+  "tps": 33.7,
+  "prefill": 590,
+  "served": "nemotron-3.5-bolt"
+ },
+ "evidence": {
+  "ok": {
+   "load": true,
+   "chat": true,
+   "reasoning": true,
+   "tools": true,
+   "context": true,
+   "speed": true
+  },
+  "chat": {
+   "content": "Red, Yellow, Blue",
+   "finish": "stop"
+  },
+  "reasoning": {
+   "thinking_chars": 247,
+   "content": "391"
+  },
+  "tools": {
+   "call": [
+    {
+     "type": "function",
+     "function": {
+      "name": "get_weather",
+      "arguments": "{\"city\":\"Paris\"}"
+     },
+     "id": "Mf4sTcVWtKXUePxSH1G6cia8kTYGorGg"
+    }
+   ],
+   "reply": "The current weather in Paris is **17°C** with an **overcast** sky.",
+   "finish": "stop",
+   "calls_again": 0,
+   "thinking_chars": 303
+  },
+  "context": {
+   "prompt_tokens": 213575,
+   "seconds": 361.9,
+   "content": "58213"
+  },
+  "speed": {
+   "window_s": 30,
+   "tokens_total": 1438,
+   "seconds_total": 43.6
+  }
+ },
+ "launch_config_sha256": null
+}

@@ -742,7 +742,14 @@
       "about": "NVIDIA's hybrid Mamba-Transformer MoE (74B total, about 9B active), compressed from Nemotron 3.5 Super VL and quantization-aware distilled to a 24 GB checkpoint (IQ2_XXS experts, NVFP4 Mamba layers, Q8_0 attention), with an image projector.",
       "good_for": "Local agents, chat, reasoning, tool calls and images on one 32 GB GPU",
       "logo": "hf",
-      "hf": "nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB-GGUF"
+      "hf": "nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB-GGUF",
+      "aa": {
+        "index": 21.4,
+        "name": "Nemotron 3.5 Bolt 74B-A9B",
+        "slug": "nemotron-3-5-bolt-74b-a9b",
+        "estimated": false,
+        "at": "2026-10-18"
+      }
     }
   },
   "builds": {

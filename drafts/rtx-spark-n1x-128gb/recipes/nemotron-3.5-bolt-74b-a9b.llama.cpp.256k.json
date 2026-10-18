@@ -1,1 +1,0 @@
-{"model":"nemotron-3.5-bolt-74b-a9b","weights":"nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB-GGUF@e0fecb69cb3e5e4c5e8a056fa2aec98c78e91246","engine":"llama.cpp-nemotron-3.5-bolt-74b-a9b-24gb-lilicorr-256k-rtx-spark-n1x-128gb@b195b5299103","set":{},"card":"rtx-spark-n1x-128gb","proof":[]}

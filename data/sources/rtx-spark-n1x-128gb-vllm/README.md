@@ -31,6 +31,8 @@ Before each run, the rendered args were checked to equal, argument for argument,
 
 **`qwen3.8-27b.vllm.256k` (2026-10-18)** is NVIDIA's NVFP4 checkpoint with the same DFlash draft as the AWQ builds, at `mem` 0.6: 36.9 tok/s against the FP8 build's 23.8 at the same AA index. `MemAvailable` dipped to 4.1 GiB for ten seconds while vLLM captured CUDA graphs (GPU allocation 92 GiB, above the 71.7 GiB share, during start only); it held 11+ GiB otherwise. The start took 16 minutes with a 25 GB download running beside it on the same disk.
 
+**`nemotron-3.5-bolt-74b-a9b.llama.cpp.256k` (2026-10-18)** is NVIDIA's 24 GB Bolt GGUF with its image projector and the LiLiCorr DFlash drafter, on llama.cpp's own CUDA 13 image (`server-cuda13-b11718`, arm64), with NVIDIA's RTX Spark flags and none of a host's. It serves 10 s after `docker run` and holds 35 GiB at most, so the machine kept 60 GiB free throughout.
+
 ## Files
 
 - **`memwatch/<model>.csv`:** one per launch, every 5 s from `docker run` until the container was removed.
@@ -51,5 +53,6 @@ Before each run, the rendered args were checked to equal, argument for argument,
 | `qwen3.8-27b-awq-bf16-int4.vllm.256k` | 15.7 | 330 | 213612 | 72 s | 87115 | 97.3 → 9.7 |
 | `qwen3.6-35b-a3b.vllm.256k` (NVFP4, MTP 2, `mem` 0.6) | 103.0 | 1184 | 213570 | 78 s | 62656 | 90.7 → 11.5 |
 | `qwen3.8-27b.vllm.256k` (NVIDIA NVFP4, DFlash, `mem` 0.6) | 36.9 | 506 | 213612 | 39 s | 92425 | 89.6 → 4.1 |
+| `nemotron-3.5-bolt-74b-a9b.llama.cpp.256k` (NVIDIA 24 GB GGUF, LiLiCorr draft, llama.cpp b11718) | 33.7 | 590 | 213575 | 10 s to serve | 35100 | 94.4 → 60.0 |
 
 Load is vLLM's "Model loading took". The plugin's whole start, from `docker run` to the API answering, took 182–288 s for each.
