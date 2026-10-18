@@ -33,6 +33,8 @@ Before each run, the rendered args were checked to equal, argument for argument,
 
 **`nemotron-3.5-bolt-74b-a9b.llama.cpp.256k` (2026-10-18)** is NVIDIA's 24 GB Bolt GGUF with its image projector and the LiLiCorr DFlash drafter, on llama.cpp's own CUDA 13 image (`server-cuda13-b11718`, arm64), with NVIDIA's RTX Spark flags and none of a host's. It serves 10 s after `docker run` and holds 35 GiB at most, so the machine kept 60 GiB free throughout.
 
+**`nemotron-3.5-super-vl.llama.cpp.128k` (2026-10-18)** is ggml-org's NVFP4 GGUF of NVIDIA's Super VL 120B-A12B, with its Q8_0 image projector and LiLiCorr drafter, at 128K context with a q8_0 cache (eight attention layers, about 1 GiB for the whole window). It passes the speed gate by 0.7 tok/s: the first 30 s of an answer ran at 15.7 tok/s, a 2,112-token answer at 19.8. It holds 83.6 GiB, so it needs the browser and other heavy apps closed; 15.3 GiB stayed free here.
+
 ## Files
 
 - **`memwatch/<model>.csv`:** one per launch, every 5 s from `docker run` until the container was removed.
@@ -54,5 +56,6 @@ Before each run, the rendered args were checked to equal, argument for argument,
 | `qwen3.6-35b-a3b.vllm.256k` (NVFP4, MTP 2, `mem` 0.6) | 103.0 | 1184 | 213570 | 78 s | 62656 | 90.7 → 11.5 |
 | `qwen3.8-27b.vllm.256k` (NVIDIA NVFP4, DFlash, `mem` 0.6) | 36.9 | 506 | 213612 | 39 s | 92425 | 89.6 → 4.1 |
 | `nemotron-3.5-bolt-74b-a9b.llama.cpp.256k` (NVIDIA 24 GB GGUF, LiLiCorr draft, llama.cpp b11718) | 33.7 | 590 | 213575 | 10 s to serve | 35100 | 94.4 → 60.0 |
+| `nemotron-3.5-super-vl.llama.cpp.128k` (ggml-org NVFP4 GGUF, LiLiCorr draft, q8_0 KV) | 15.7 | 477 | 106257 | 57 s to serve | 83588 | 93.7 → 15.3 |
 
 Load is vLLM's "Model loading took". The plugin's whole start, from `docker run` to the API answering, took 182–288 s for each.
