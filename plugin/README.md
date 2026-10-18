@@ -9,3 +9,5 @@ What Omarchy Local AI reads. The paths are fixed: released plugins fetch them fr
 | `recipes.json` | plugin 5.x | frozen at 2026-09-25 (38 card kinds); not regenerated, kept so old installs still update |
 
 CI fails if `v2/` or `v3/` drifts from the recipes (`python3 lab/export_plugin.py --check`).
+
+`v3/` also carries optional fields for choosing a model, which older plugins ignore: each hardware kind's `name` and `bandwidthGbS` (when known), and on each recipe `model` (the base model's `id`, `name`, `about`, `goodFor`, `released`, `hf`), `quant` (a short build label such as `INT4`, `EXL3 3.0bpw` or `Q4_K_M`) and `speed` (`decode` and `prefill` tokens per second, the proof's date `at`, and `source`: `lab`, `reported` or `legacy`), each left out when the registry does not know it.

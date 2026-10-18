@@ -111,6 +111,73 @@ def aa(r, meta):
     return {"aa": i} if isinstance(i, (int, float)) else {}
 
 
+def speed(r):
+    """v3: the measured speed of the recipe's first usable (not withdrawn) proof with a decode rate:
+    {"decode": 15.7, "prefill": 330, "at": "2026-10-15", "source": "lab"}, or nothing when no proof measured one."""
+    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool) and v > 0
+    for p in r.get("proof") or []:
+        if p.get("withdrawn") or not num(p.get("tps")):
+            continue
+        source = "reported" if p.get("reported") else "legacy" if p.get("legacy") else "lab"
+        return {"speed": {"decode": p["tps"], **({"prefill": p["prefill"]} if num(p.get("prefill")) else {}),
+                          **({"at": p["at"]} if p.get("at") else {}), "source": source}}
+    return {}
+
+
+def base_model(r, meta):
+    """v3: the display data of the model a recipe runs, a build of another model (its `aa` names `of`) described by
+    its base: {"model": {"id", "name", "about", "goodFor", "released", "hf"}}, keys the registry lacks left out."""
+    models = meta.get("models") or {}
+    mid, seen = r.get("model"), 0
+    while "of" in ((models.get(mid) or {}).get("aa") or {}) and models.get(models[mid]["aa"]["of"]) and seen < 4:
+        mid, seen = models[mid]["aa"]["of"], seen + 1
+    m = models.get(mid)
+    if not m:
+        return {}
+    keys = {"name": "name", "about": "about", "good_for": "goodFor", "released": "released", "hf": "hf"}
+    return {"model": {"id": mid, **{out: m[k] for k, out in keys.items() if m.get(k)}}}
+
+
+GGUF_QUANT = re.compile(r"(?<![A-Za-z0-9])(?:UD-)?I?Q\d(?:_[0-9A-Z]+)+(?![A-Za-z0-9])")
+
+
+def quant(fmt):
+    """v3: a short label for a build's format string (registry/models.json `builds`), e.g. "AWQ · INT4 W4A16 (g32,
+    asym)" -> "INT4", "EXL3 · 3 bpw, 6-bit head" -> "EXL3 3.0bpw", "GGUF · UD-Q4_K_XL + MTP" -> "UD-Q4_K_XL";
+    None for one it cannot read."""
+    if not fmt:
+        return None
+    up = fmt.upper()
+    tokens = list(dict.fromkeys(GGUF_QUANT.findall(fmt)))
+    if "GGUF" in up or (tokens and GGUF_QUANT.match(fmt)):
+        if mix := re.search(r"(?<![A-Za-z0-9])(I?Q\d)-mix", fmt):
+            return f"{mix.group(1)} mix"
+        if len(tokens) != 1 or "MIXED" in up:
+            return "GGUF mixed"
+        tag = next((t for t in ("QAT", "QAD") if re.search(rf"\b{t}\b", up)), None)
+        return f"{tag} {tokens[0]}" if tag else tokens[0]
+    if "EXL3" in up:
+        if bpw := re.search(r"(\d+(?:\.\d+)?)\s*bpw", fmt, re.I):
+            s = f"{float(bpw.group(1)):.2f}".rstrip("0")
+            return f"EXL3 {s}0bpw" if s.endswith(".") else f"EXL3 {s}bpw"
+        return "EXL3 mixed" if "MIXED" in up else "EXL3"
+    if "MLX" in up:
+        bits = re.search(r"(\d+)-bit", fmt)
+        return f"MLX {bits.group(1)}-bit" if bits else "MLX"
+    if "NVFP4" in up:
+        return "NVFP4"
+    if t := re.search(r"\b(INT\d+|FP8|FP4|BF16|FP16)\b", up):
+        return t.group(1)
+    tail = fmt.rpartition("·")[2].strip()
+    return tail if tail and len(tail) <= 16 else None
+
+
+def details(r, e, meta):
+    """v3's optional fields for picking a model: the base model, the build's quant label and the measured speed."""
+    q = quant(e["format"]) or quant((meta["builds"].get(r.get("weights")) or {}).get("format"))
+    return {**base_model(r, meta), **({"quant": q} if q else {}), **speed(r)}
+
+
 def mounts_ok(e):
     """The plugin's own rules: an id it accepts (a-z, 0-9, dots and dashes, at most 64), and no input mounted at, or
     above, where a prepared pack is mounted."""
@@ -197,6 +264,11 @@ def build(version=2):
         if ok:
             hw[card] = {"match": c["match"], "recipes": [dict(entry(k, cat["recipes"][k], meta), **({"reported": True} if cat["recipes"][k]["proof"][0].get("reported") else {}),
                                                               **aa(cat["recipes"][k], meta)) for k in ok]}
+            if version >= 3:  # optional fields that help pick a model; older plugins ignore them
+                for k, e in zip(ok, hw[card]["recipes"]):
+                    e.update(details(cat["recipes"][k], e, meta))
+                hw[card] = {**({"name": c["name"]} if c.get("name") else {}),
+                            **({"bandwidthGbS": c["bandwidth_gb_s"]} if c.get("bandwidth_gb_s") else {}), **hw[card]}
             for e in hw[card]["recipes"]:  # a needs block reaches the plugin only in the checked shape
                 if "resources" in e:
                     e["launch"]["resources"] = e.pop("resources")
