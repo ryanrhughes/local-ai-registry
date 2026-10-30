@@ -69,7 +69,7 @@
       "reasoning": true,
       "vision": true,
       "about": "Qwen3.8's large mixture-of-experts model: far more knowledge than the 27B, with few active parameters, so it stays fast.",
-      "good_for": "The most capable model one 96 GB card, or a DGX Spark, runs",
+      "good_for": "The most capable model that runs on one 96 GB card or a DGX Spark",
       "logo": "qwen",
       "aa": {
         "index": 39.8,
